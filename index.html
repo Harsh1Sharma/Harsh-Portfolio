@@ -3,30 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Portfolio</title>
+    <title>Harsh Sharma | Portfolio</title>
     <style>
-        /* 1. Base Styles */
+        /* Responsive Base Styles */
         body, html {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f4f9;
-            color: #333;
             margin: 0;
             padding: 0;
+            width: 100%;
             height: 100%;
+            overflow-x: hidden;
+            background-color: #c07a5f;
         }
 
-        /* 2. The Background Banner (1/4 of the screen) */
+        /* 1. Responsive Banner */
         .banner {
             position: relative;
             width: 100%;
-            height: 25vh;
+            height: 30vh;
+            min-height: 200px;
             background-color: #c07a5f;
-            
-            /* Deepened the gradient to fade out significantly more */
             background-image: 
                 linear-gradient(to bottom, transparent 50%, #c07a5f 100%),
                 url('./Bacground.jpg'); 
-            
             background-size: cover; 
             background-position: center 65%; 
             display: flex;
@@ -34,58 +33,46 @@
             justify-content: center;
             z-index: 10;
         }
-        
-        /* 3. The Profile Picture */
+
+        /* 2. Responsive Profile Picture */
         .profile-img {
             position: absolute;
             left: 5vw;
-            width: 16vh;
-            height: 16vh;       
+            width: clamp(80px, 15vw, 150px);
+            height: clamp(80px, 15vw, 150px);
             border-radius: 50%;  
             object-fit: cover;
             object-position: center 58%; 
             border: 4px solid #ffffff; 
-            box-shadow: 0 0 20px rgba(0,0,0,0.8); 
+            box-shadow: 0 0 20px rgba(0,0,0,0.5); 
             cursor: pointer;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.3s ease;
         }
+        .profile-img:hover { transform: scale(1.05); }
 
-        .profile-img:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 25px rgba(255, 0, 127, 0.6);
-        }
-
-        /* 4. The Unique Name */
+        /* 3. Responsive Name */
         .unique-name {
-            font-size: clamp(2rem, 6vw, 4.5rem); 
+            font-size: clamp(1.5rem, 8vw, 4rem); 
             font-weight: 900;
-            margin: 0;
             text-transform: uppercase;
-            letter-spacing: 4px;
+            text-align: center;
             background: linear-gradient(to right, #ff007f 0%, #7928ca 50%, #ff007f 100%);
             background-size: 200% auto;
-            color: #fff;
             background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            filter: drop-shadow(4px 6px 5px rgba(0,0,0,0.9));
+            filter: drop-shadow(2px 3px 3px rgba(0,0,0,0.5));
             animation: shine 3s linear infinite;
         }
 
-        @keyframes shine {
-            to { background-position: 200% center; }
-        }
-
-        /* 5. The Rest of the Page */
+        /* 4. Responsive Main Content */
         .main-content {
-            min-height: 75vh;
+            width: 100%;
+            min-height: 70vh;
             background-color: #c07a5f;
-
-            /* Deepened the top gradient to blend more aggressively with the banner */
             background-image: 
                 linear-gradient(to top, transparent 50%, #c07a5f 100%),
                 url('./IIEBM.jpg'); 
-            
             background-size: cover;
             background-position: center;
             display: flex;
@@ -95,19 +82,19 @@
             box-sizing: border-box;
         }
 
-        /* 6. The Info Card */
+        /* 5. Fluid Info Card */
         .card {
-            background-color: rgba(255, 255, 255, 0.9); 
-            backdrop-filter: blur(8px);
-            width: 100%;
+            background-color: rgba(255, 255, 255, 0.95); 
+            backdrop-filter: blur(10px);
+            width: 90%;
             max-width: 600px;
-            padding: 40px;
-            border-radius: 15px;
+            padding: clamp(20px, 5vw, 40px);
+            border-radius: 20px;
             text-align: center;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         }
         
-        .bio { font-size: 1.2rem; color: #555; line-height: 1.6; margin-top: 0; }
+        .bio { font-size: clamp(0.9rem, 2vw, 1.1rem); color: #555; line-height: 1.6; }
         .button {
             display: inline-block;
             margin-top: 20px;
@@ -117,15 +104,11 @@
             text-decoration: none;
             border-radius: 25px;
             font-weight: bold;
-            transition: 0.3s ease;
+            transition: 0.3s;
         }
-        .button:hover {
-            background-color: #ff007f;
-            box-shadow: 0 5px 15px rgba(255, 0, 127, 0.4);
-            transform: translateY(-2px);
-        }
+        .button:hover { background-color: #ff007f; transform: translateY(-2px); }
 
-        /* 7. Image Modal */
+        /* 6. Modals */
         .modal {
             display: none;
             position: fixed;
@@ -134,40 +117,14 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(5px);
+            background-color: rgba(0, 0, 0, 0.9);
             align-items: center;
             justify-content: center;
         }
+        .modal-content { max-width: 90%; max-height: 80vh; border-radius: 15px; }
 
-        .modal-content {
-            max-width: 90%;
-            max-height: 90vh;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            animation: zoomIn 0.3s ease;
-        }
-
-        @keyframes zoomIn {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        .close-btn {
-            position: absolute;
-            top: 20px;
-            right: 40px;
-            color: white;
-            font-size: 50px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .close-btn:hover { color: #ff007f; }
-        
-        .about-text { text-align: left; font-size: 1.1rem; line-height: 1.8; color: #444; }
-        .about-title { color: #7928ca; margin-top: 0; margin-bottom: 20px; font-size: 1.8rem; }
+        /* Animations */
+        @keyframes shine { to { background-position: 200% center; } }
     </style>
 </head>
 <body>
@@ -185,11 +142,11 @@
             </div>
 
             <div id="about-section" style="display: none;">
-                <h2 class="about-title">A Little More About Me</h2>
-                <div class="about-text">
+                <h2 style="color: #7928ca;">About Me</h2>
+                <div style="text-align: left; font-size: 1rem; line-height: 1.6;">
                     <p><strong>Education:</strong> Student at IIEBM Pune.</p>
-                    <p><strong>Interests:</strong> Artificial Intelligence, Web Development, and creating professional software from scratch.</p>
-                    <p><strong>My Goal:</strong> I am focused on building innovative applications and continuously learning new technologies to solve real-world problems.</p>
+                    <p><strong>Interests:</strong> AI, Web Development, Software Engineering.</p>
+                    <p><strong>Goal:</strong> Building innovative solutions.</p>
                 </div>
                 <a href="#" class="button" onclick="showHome(event)">Go Back</a>
             </div>
@@ -197,23 +154,14 @@
     </div>
 
     <div id="imageModal" class="modal" onclick="closeModal()">
-        <span class="close-btn">&times;</span>
         <img class="modal-content" src="./profile.jpeg" alt="Full Profile Picture">
     </div>
 
     <script>
         function openModal() { document.getElementById("imageModal").style.display = "flex"; }
         function closeModal() { document.getElementById("imageModal").style.display = "none"; }
-        function showAbout(event) {
-            event.preventDefault();
-            document.getElementById("home-section").style.display = "none";
-            document.getElementById("about-section").style.display = "block";
-        }
-        function showHome(event) {
-            event.preventDefault();
-            document.getElementById("about-section").style.display = "none";
-            document.getElementById("home-section").style.display = "block";
-        }
+        function showAbout(e) { e.preventDefault(); document.getElementById("home-section").style.display = "none"; document.getElementById("about-section").style.display = "block"; }
+        function showHome(e) { e.preventDefault(); document.getElementById("about-section").style.display = "none"; document.getElementById("home-section").style.display = "block"; }
     </script>
 </body>
 </html>
