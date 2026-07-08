@@ -5,35 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Portfolio</title>
     <style>
-        /* 1. Base Styles */
+        /* 1. Base Styles (Home Default) */
         body, html {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: transparent; /* Wall demolished */
+            background-color: #f4f4f9; 
             color: #333;
             margin: 0;
             padding: 0;
             height: 100%;
             overflow-x: hidden; 
+            transition: background-color 0.5s ease;
         }
 
-        /* 2. Full-Screen Background Video & Overlay */
-        .fullscreen-bg-video {
+        /* 2. Video & Overlay (Hidden by default in Home View) */
+        .fullscreen-bg-video, .fullscreen-overlay {
+            opacity: 0; 
+            visibility: hidden;
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .fullscreen-bg-video {
             object-fit: cover;
-            z-index: -2; /* Keeps the video at the very back */
+            z-index: -2; 
         }
 
         .fullscreen-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            /* A dark, semi-transparent overlay to make your text pop */
             background-color: rgba(0, 0, 0, 0.5); 
             z-index: -1; 
         }
@@ -41,22 +42,97 @@
         /* 3. The Layout Structure */
         .content-wrapper {
             position: relative;
-            z-index: 1; /* Places all content above the video and overlay */
+            z-index: 1; 
             display: flex;
             flex-direction: column;
             min-height: 100vh;
         }
 
+        /* 4. Banner (Home View Defaults) */
         .banner {
             position: relative;
             width: 100%;
-            height: 30vh; /* Slightly taller to balance the full screen */
+            height: 25vh;
+            background-color: #c07a5f;
+            background-image: 
+                linear-gradient(to bottom, transparent 50%, #c07a5f 100%),
+                url('./Bacground.jpg'); 
+            background-size: cover; 
+            background-position: center 65%; 
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.5s ease; 
         }
         
-        /* 4. The Profile Picture */
+        /* 5. Main Content (Home View Defaults) */
+        .main-content {
+            flex-grow: 1; 
+            background-color: #c07a5f;
+            background-image: 
+                linear-gradient(to top, transparent 50%, #c07a5f 100%),
+                url('./IIEBM.jpg'); 
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+            transition: all 0.5s ease;
+        }
+
+        /* =========================================
+           6. ABOUT MODE STYLES (Triggered by JS)
+           ========================================= */
+        body.about-mode {
+            background-color: transparent;
+        }
+        
+        body.about-mode .fullscreen-bg-video,
+        body.about-mode .fullscreen-overlay {
+            opacity: 1; 
+            visibility: visible;
+        }
+
+        body.about-mode .banner {
+            height: 30vh;
+            background-image: none; 
+            background-color: transparent; 
+        }
+
+        body.about-mode .main-content {
+            background-image: none;
+            background-color: transparent;
+        }
+
+        /* Hides the frosted glass card to leave floating text */
+        body.about-mode .card {
+            background: transparent;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+        }
+
+        body.about-mode .about-text {
+            color: #ffffff; 
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.9); 
+            font-size: 1.25rem; 
+        }
+
+        body.about-mode .about-text strong {
+            color: #ff007f; 
+        }
+
+        body.about-mode .about-title {
+            color: #ffffff;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.9);
+            font-size: 2.2rem;
+        }
+        /* ========================================= */
+
+        /* 7. The Profile Picture */
         .profile-img {
             position: absolute;
             left: 5vw;
@@ -76,7 +152,7 @@
             box-shadow: 0 0 25px rgba(255, 0, 127, 0.6);
         }
 
-        /* 5. The Unique Name */
+        /* 8. The Unique Name */
         .unique-name {
             font-size: clamp(2rem, 6vw, 4.5rem); 
             font-weight: 900;
@@ -97,29 +173,22 @@
             to { background-position: 200% center; }
         }
 
-        /* 6. Main Content Area */
-        .main-content {
-            flex-grow: 1; /* Allows this section to fill remaining space */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-        /* 7. The Info Card */
+        /* 9. The Info Card (Glassmorphism) */
         .card {
-            background-color: rgba(255, 255, 255, 0.9); 
-            backdrop-filter: blur(8px);
+            background-color: rgba(255, 255, 255, 0.15); 
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px); 
+            border: 1px solid rgba(255, 255, 255, 0.3); 
             width: 100%;
             max-width: 600px;
             padding: 40px;
             border-radius: 15px;
             text-align: center;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5); 
         }
         
-        .bio { font-size: 1.2rem; color: #555; line-height: 1.6; margin-top: 0; }
+        .bio { font-size: 1.2rem; color: #f4f4f9; line-height: 1.6; margin-top: 0; text-shadow: 1px 1px 3px rgba(0,0,0,0.8); }
+        
         .button {
             display: inline-block;
             margin-top: 20px;
@@ -137,7 +206,10 @@
             transform: translateY(-2px);
         }
 
-        /* 8. Image Modal */
+        .about-text { text-align: left; font-size: 1.1rem; line-height: 1.8; color: #f4f4f9; text-shadow: 1px 1px 3px rgba(0,0,0,0.8); }
+        .about-title { color: #ff007f; margin-top: 0; margin-bottom: 20px; font-size: 1.8rem; text-shadow: 1px 1px 3px rgba(0,0,0,0.8); }
+
+        /* 10. Image Modal */
         .modal {
             display: none;
             position: fixed;
@@ -177,9 +249,6 @@
         }
 
         .close-btn:hover { color: #ff007f; }
-        
-        .about-text { text-align: left; font-size: 1.1rem; line-height: 1.8; color: #444; }
-        .about-title { color: #7928ca; margin-top: 0; margin-bottom: 20px; font-size: 1.8rem; }
     </style>
 </head>
 <body>
@@ -187,7 +256,6 @@
     <video autoplay loop muted playsinline class="fullscreen-bg-video">
         <source src="vidssave.mp4" type="video/mp4">
     </video>
-    
     <div class="fullscreen-overlay"></div>
 
     <div class="content-wrapper">
@@ -198,20 +266,22 @@
 
         <div class="main-content">
             <div class="card">
+                
                 <div id="home-section">
-                    <p class="bio">Welcome! I am a student at IIEBM Pune, passionately exploring the world of artificial intelligence and web development. Click the button below to discover more about my journey and work. Cheers!</p>
+                    <p class="bio" id="dynamic-bio">Loading bio...</p>
                     <a href="#" class="button" onclick="showAbout(event)">About me</a>
                 </div>
 
                 <div id="about-section" style="display: none;">
                     <h2 class="about-title">A Little More About Me</h2>
                     <div class="about-text">
-                        <p><strong>Education:</strong> Student at IIEBM Pune.</p>
-                        <p><strong>Interests:</strong> Artificial Intelligence, Web Development, and creating professional software from scratch.</p>
-                        <p><strong>My Goal:</strong> I am focused on building innovative applications and continuously learning new technologies to solve real-world problems.</p>
+                        <p><strong>Education:</strong> <span id="dynamic-edu">Loading education...</span></p>
+                        <p><strong>Interests:</strong> <span id="dynamic-interest">Loading interests...</span></p>
+                        <p><strong>My Goal:</strong> <span id="dynamic-goal">Loading goals...</span></p>
                     </div>
                     <a href="#" class="button" onclick="showHome(event)">Go Back</a>
                 </div>
+
             </div>
         </div>
     </div>
@@ -224,16 +294,60 @@
     <script>
         function openModal() { document.getElementById("imageModal").style.display = "flex"; }
         function closeModal() { document.getElementById("imageModal").style.display = "none"; }
+        
         function showAbout(event) {
             event.preventDefault();
             document.getElementById("home-section").style.display = "none";
             document.getElementById("about-section").style.display = "block";
+            document.body.classList.add("about-mode");
         }
+        
         function showHome(event) {
             event.preventDefault();
             document.getElementById("about-section").style.display = "none";
             document.getElementById("home-section").style.display = "block";
+            document.body.classList.remove("about-mode");
         }
+    </script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // IMPORTANT: Replace this block with your actual keys from the Firebase Dashboard!
+        const firebaseConfig = {
+    apiKey: "AIzaSyAHYUhxByRHwv34sOemsBXUpZtULGJY6SE",
+    authDomain: "portfolio-9dc7d.firebaseapp.com",
+    projectId: "portfolio-9dc7d",
+    storageBucket: "portfolio-9dc7d.firebasestorage.app",
+    messagingSenderId: "629658202357",
+    appId: "1:629658202357:web:a038f54c81984c9f90d5bc",
+    measurementId: "G-GXBR3W4WP9"
+  };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Fetch data from Firebase and update the page
+        async function loadContent() {
+            try {
+                const querySnapshot = await getDocs(collection(db, "portfolio_content"));
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    // Maps database fields to HTML IDs
+                    if(data.bio_text) document.getElementById("dynamic-bio").innerText = data.bio_text;
+                    if(data.education_text) document.getElementById("dynamic-edu").innerText = data.education_text;
+                    if(data.interest_text) document.getElementById("dynamic-interest").innerText = data.interest_text;
+                    if(data.goal_text) document.getElementById("dynamic-goal").innerText = data.goal_text;
+                });
+            } catch (error) {
+                console.error("Error fetching Firebase data:", error);
+                document.getElementById("dynamic-bio").innerText = "Error loading content. Please check console.";
+            }
+        }
+
+        // Run the fetch function instantly when the page loads
+        loadContent();
     </script>
 </body>
 </html>
