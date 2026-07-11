@@ -3,246 +3,391 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Portfolio</title>
+    <title>Harsh Sharma — Portfolio</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
-        /* 1. Base Styles (Home Default) */
-        body, html {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f4f9; 
-            color: #333;
+        /* =========================================
+           TOKENS
+           A dark, cinematic base (the video carries the
+           color), with one accent color per interest so
+           the card row reads like a real catalog instead
+           of one palette repeated six times.
+           ========================================= */
+        :root {
+            --ink: #0b0a10;
+            --paper: #f4f4f2;
+            --pink: #ff2e88;
+            --purple: #7928ca;
+            --cyan: #21c7d6;
+            --gold: #ffb84d;
+            --green: #4ade80;
+            --orange: #ff7a45;
+
+            --font-display: 'Space Grotesk', 'Segoe UI', sans-serif;
+            --font-body: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+
+        html, body {
             margin: 0;
             padding: 0;
             height: 100%;
-            overflow-x: hidden; 
-            transition: background-color 0.5s ease;
+            font-family: var(--font-body);
+            background-color: var(--ink);
+            color: var(--paper);
+            overflow-x: hidden;
         }
 
-        /* 2. Video & Overlay (Hidden by default in Home View) */
-        .fullscreen-bg-video, .fullscreen-overlay {
-            opacity: 0; 
-            visibility: hidden;
+        /* =========================================
+           FULLSCREEN VIDEO — always on, everywhere.
+           No mode-switching, no fading in and out.
+           ========================================= */
+        .fullscreen-bg-video {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
-        }
-
-        .fullscreen-bg-video {
             object-fit: cover;
-            z-index: -2; 
+            z-index: 0;
         }
 
         .fullscreen-overlay {
-            background-color: rgba(0, 0, 0, 0.5); 
-            z-index: -1; 
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+            background: linear-gradient(180deg, rgba(8,7,12,0.35) 0%, rgba(8,7,12,0.55) 45%, rgba(8,7,12,0.85) 100%);
         }
 
-        /* 3. The Layout Structure */
-        .content-wrapper {
-            position: relative;
-            z-index: 1; 
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
+        /* Soft cursor glow — quiet atmosphere, follows the pointer, never
+           blocks a click */
+        .cursor-glow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 380px;
+            height: 380px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,46,136,0.16) 0%, rgba(121,40,202,0.10) 45%, transparent 70%);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 2;
+            will-change: transform;
         }
 
-        /* 4. Banner (Home View Defaults) */
-        .banner {
-            position: relative;
-            width: 100%;
-            height: 25vh;
-            background-color: #c07a5f;
-            background-image: 
-                linear-gradient(to bottom, transparent 50%, #c07a5f 100%),
-                url('./Bacground.jpg'); 
-            background-size: cover; 
-            background-position: center 65%; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.5s ease; 
-        }
-        
-        /* 5. Main Content (Home View Defaults) */
-        .main-content {
-            flex-grow: 1; 
-            background-color: #c07a5f;
-            background-image: 
-                linear-gradient(to top, transparent 50%, #c07a5f 100%),
-                url('./IIEBM.jpg'); 
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            box-sizing: border-box;
-            transition: all 0.5s ease;
+        @media (max-width: 768px) {
+            .cursor-glow { display: none; }
         }
 
         /* =========================================
-           6. ABOUT MODE STYLES (Triggered by JS)
+           LAYOUT
            ========================================= */
-        body.about-mode {
-            background-color: transparent;
-        }
-        
-        body.about-mode .fullscreen-bg-video,
-        body.about-mode .fullscreen-overlay {
-            opacity: 1; 
-            visibility: visible;
-        }
-
-        body.about-mode .banner {
-            height: 30vh;
-            background-image: none; 
-            background-color: transparent; 
+        .stage {
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8vh 20px 6vh;
         }
 
-        body.about-mode .main-content {
-            background-image: none;
-            background-color: transparent;
+        .panel {
+            width: 100%;
+            max-width: 780px;
+            text-align: center;
         }
 
-        /* Hides the frosted glass card to leave floating text */
-        body.about-mode .card {
-            background: transparent;
-            backdrop-filter: none;
-            -webkit-backdrop-filter: none;
-            border: none;
-            box-shadow: none;
+        /* =========================================
+           HERO / HOME
+           ========================================= */
+        .profile-wrap {
+            position: fixed;
+            top: 28px;
+            left: 28px;
+            width: 90px;
+            height: 90px;
+            z-index: 20;
+            transform-style: preserve-3d;
         }
 
-        body.about-mode .about-text {
-            color: #ffffff; 
-            text-shadow: 2px 2px 5px rgba(0,0,0,0.9); 
-            font-size: 1.25rem; 
-        }
-
-        body.about-mode .about-text strong {
-            color: #ff007f; 
-        }
-
-        body.about-mode .about-title {
-            color: #ffffff;
-            text-shadow: 2px 2px 5px rgba(0,0,0,0.9);
-            font-size: 2.2rem;
-        }
-        /* ========================================= */
-
-        /* 7. The Profile Picture */
         .profile-img {
-            position: absolute;
-            left: 5vw;
-            width: 16vh;
-            height: 16vh;       
-            border-radius: 50%;  
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
             object-fit: cover;
-            object-position: center 58%; 
-            border: 4px solid #ffffff; 
-            box-shadow: 0 0 20px rgba(0,0,0,0.8); 
+            object-position: center 58%;
+            border: 3px solid rgba(255,255,255,0.85);
+            box-shadow: 0 0 30px rgba(0,0,0,0.6);
             cursor: pointer;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: block;
+            transition: transform 0.15s ease-out, box-shadow 0.3s ease;
         }
 
         .profile-img:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 25px rgba(255, 0, 127, 0.6);
+            box-shadow: 0 0 30px rgba(255, 46, 136, 0.55);
         }
 
-        /* 8. The Unique Name */
         .unique-name {
-            font-size: clamp(2rem, 6vw, 4.5rem); 
-            font-weight: 900;
-            margin: 0;
+            font-family: var(--font-display);
+            font-size: clamp(2.2rem, 7vw, 4.2rem);
+            font-weight: 700;
+            margin: 0 0 8px;
             text-transform: uppercase;
-            letter-spacing: 4px;
-            background: linear-gradient(to right, #ff007f 0%, #7928ca 50%, #ff007f 100%);
+            letter-spacing: 3px;
+            background: linear-gradient(100deg, var(--pink) 0%, var(--purple) 50%, var(--cyan) 100%);
             background-size: 200% auto;
             color: #fff;
             background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            filter: drop-shadow(4px 6px 5px rgba(0,0,0,0.9));
-            animation: shine 3s linear infinite;
+            animation: shine 4s linear infinite;
         }
 
         @keyframes shine {
             to { background-position: 200% center; }
         }
 
-        /* 9. The Info Card (Glassmorphism) */
-        .card {
-            background-color: rgba(255, 255, 255, 0.15); 
-            backdrop-filter: blur(12px); 
-            -webkit-backdrop-filter: blur(12px); 
-            border: 1px solid rgba(255, 255, 255, 0.3); 
-            width: 100%;
-            max-width: 600px;
-            padding: 40px;
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5); 
-        }
-        
-        .bio { font-size: 1.2rem; color: #f4f4f9; line-height: 1.6; margin-top: 0; text-shadow: 1px 1px 3px rgba(0,0,0,0.8); }
-        
-        .button {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 12px 30px;
-            background-color: #7928ca;
-            color: white;
-            text-decoration: none;
-            border-radius: 25px;
-            font-weight: bold;
-            transition: 0.3s ease;
-        }
-        .button:hover {
-            background-color: #ff007f;
-            box-shadow: 0 5px 15px rgba(255, 0, 127, 0.4);
-            transform: translateY(-2px);
+        .tagline {
+            font-size: 1.05rem;
+            font-weight: 500;
+            color: rgba(244,244,242,0.8);
+            margin: 0 0 26px;
+            letter-spacing: 0.3px;
         }
 
-        .about-text { text-align: left; font-size: 1.1rem; line-height: 1.8; color: #f4f4f9; text-shadow: 1px 1px 3px rgba(0,0,0,0.8); }
-        .about-title { color: #ff007f; margin-top: 0; margin-bottom: 20px; font-size: 1.8rem; text-shadow: 1px 1px 3px rgba(0,0,0,0.8); }
-        /* --- Audio Toggle Button --- */
+        .bio {
+            font-size: 1.15rem;
+            line-height: 1.7;
+            color: var(--paper);
+            max-width: 560px;
+            margin: 0 auto 30px;
+            min-height: 1.7em;
+        }
+
+        .bio.typing::after {
+            content: '|';
+            margin-left: 2px;
+            color: var(--pink);
+            animation: blink 0.9s step-start infinite;
+        }
+
+        @keyframes blink { 50% { opacity: 0; } }
+
+        .button {
+            display: inline-block;
+            padding: 13px 32px;
+            background: linear-gradient(100deg, var(--purple), var(--pink));
+            color: #fff;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 600;
+            font-family: var(--font-body);
+            letter-spacing: 0.3px;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            box-shadow: 0 8px 24px rgba(255, 46, 136, 0.25);
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px rgba(255, 46, 136, 0.4);
+        }
+
+        .button.ghost {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.4);
+            box-shadow: none;
+        }
+
+        .button.ghost:hover {
+            background: rgba(255,255,255,0.08);
+            box-shadow: none;
+        }
+
+        /* =========================================
+           ABOUT VIEW
+           ========================================= */
+        .eyebrow {
+            font-size: 0.8rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--pink);
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .about-title {
+            font-family: var(--font-display);
+            font-size: clamp(1.8rem, 4vw, 2.6rem);
+            font-weight: 700;
+            margin: 0 0 8px;
+        }
+
+        .about-sub {
+            color: rgba(244,244,242,0.7);
+            font-size: 0.98rem;
+            margin: 0 0 28px;
+        }
+
+        .facts-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .fact-pill {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 18px;
+            padding: 7px 14px;
+            font-size: 0.78rem;
+            text-align: left;
+            backdrop-filter: blur(6px);
+        }
+
+        .fact-label {
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--gold);
+            font-weight: 600;
+            margin-right: 5px;
+        }
+
+        /* =========================================
+           INTEREST CARDS — the signature piece.
+           A little media catalog of what's actually
+           loaded in my brain, styled like poster tiles.
+           Click to flip; front carries the image, back
+           carries the one-liner.
+           ========================================= */
+        .interest-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+            max-width: 460px;
+            margin: 0 auto 8px;
+        }
+
+        .flip-card {
+            aspect-ratio: 2 / 3;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.65s cubic-bezier(0.2, 0.8, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-face {
+            position: absolute;
+            inset: 0;
+            border-radius: 14px;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.18);
+        }
+
+        .flip-front {
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: flex-end;
+            box-shadow: inset 0 -60px 50px -20px rgba(0,0,0,0.85);
+        }
+
+        .flip-front .tile-label {
+            position: relative;
+            z-index: 1;
+            padding: 6px 4px;
+            font-size: 0.62rem;
+            font-weight: 600;
+            color: #fff;
+            text-align: center;
+            width: 100%;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.9);
+        }
+
+        .flip-front .tile-label .icon { display: block; font-size: 1rem; margin-bottom: 1px; }
+
+        .flip-back {
+            transform: rotateY(180deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            font-size: 0.62rem;
+            line-height: 1.3;
+            text-align: center;
+            color: #fff;
+        }
+
+        .flip-card--books  .flip-front { background-image: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 55%), url('https://source.unsplash.com/400x600/?bookshelf,fantasy,reading'); }
+        .flip-card--lang   .flip-front { background-image: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 55%), url('https://source.unsplash.com/400x600/?worldmap,travel,language'); }
+        .flip-card--ai     .flip-front { background-image: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 55%), url('https://source.unsplash.com/400x600/?technology,circuit,futuristic'); }
+        .flip-card--anime  .flip-front { background-image: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 55%), url('https://source.unsplash.com/400x600/?tokyo,neon,night'); }
+        .flip-card--series .flip-front { background-image: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 55%), url('https://source.unsplash.com/400x600/?television,cinema,screen'); }
+        .flip-card--gaming .flip-front { background-image: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 55%), url('https://source.unsplash.com/400x600/?gaming,controller,neon'); }
+
+        .flip-card--books  .flip-back { background: linear-gradient(135deg, var(--gold), #ff9d3d); }
+        .flip-card--lang   .flip-back { background: linear-gradient(135deg, var(--green), #22c55e); }
+        .flip-card--ai     .flip-back { background: linear-gradient(135deg, var(--cyan), #0ea5b8); }
+        .flip-card--anime  .flip-back { background: linear-gradient(135deg, var(--pink), #d6266e); }
+        .flip-card--series .flip-back { background: linear-gradient(135deg, var(--purple), #5b1fa0); }
+        .flip-card--gaming .flip-back { background: linear-gradient(135deg, var(--orange), var(--pink)); }
+
+        /* --- Audio Toggle --- */
         #mute-btn {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
+            bottom: 26px;
+            right: 26px;
             z-index: 100;
-            background-color: rgba(255, 255, 255, 0.15);
+            background: rgba(255,255,255,0.1);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            padding: 10px 20px;
+            border: 1px solid rgba(255,255,255,0.3);
+            color: #fff;
+            padding: 10px 18px;
             border-radius: 25px;
-            font-weight: bold;
+            font-weight: 600;
+            font-family: var(--font-body);
+            font-size: 0.9rem;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
         #mute-btn:hover {
-            background-color: rgba(255, 255, 255, 0.3);
+            background: rgba(255,255,255,0.22);
             transform: scale(1.05);
         }
 
-        /* 10. Image Modal */
+        /* Image Modal */
         .modal {
             display: none;
             position: fixed;
+            inset: 0;
             z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(5px);
+            background-color: rgba(0,0,0,0.88);
+            backdrop-filter: blur(6px);
             align-items: center;
             justify-content: center;
         }
@@ -256,82 +401,53 @@
         }
 
         @keyframes zoomIn {
-            from { transform: scale(0.8); opacity: 0; }
+            from { transform: scale(0.85); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
         }
 
         .close-btn {
             position: absolute;
-            top: 20px;
-            right: 40px;
-            color: white;
-            font-size: 50px;
+            top: 22px;
+            right: 34px;
+            color: #fff;
+            font-size: 42px;
             font-weight: bold;
             cursor: pointer;
             transition: 0.3s;
         }
 
-        .close-btn:hover { color: #ff007f; }
-        /* =========================================
-           11. MOBILE RESPONSIVENESS
-           ========================================= */
-        @media (max-width: 768px) {
-            /* 1. Stack the banner items instead of overlapping */
-            .banner {
-                flex-direction: column;
-                height: auto; 
-                padding: 40px 10px 20px 10px; 
-            }
-            
-            body.about-mode .banner {
-                height: auto;
-                padding-top: 50px; 
+        .close-btn:hover { color: var(--pink); }
+
+        @media (prefers-reduced-motion: reduce) {
+            .unique-name { animation: none; }
+            .profile-img { transition: none; }
+            .flip-card-inner { transition: none; }
+            .cursor-glow { display: none; }
+        }
+
+        @media (max-width: 600px) {
+            .stage {
+                align-items: flex-start;
+                padding: 96px 18px 90px;
             }
 
-            /* 2. Center the profile picture and stop it from floating left */
-            .profile-img {
-                position: relative; 
-                left: auto;
-                width: 130px;
-                height: 130px;
-                margin-bottom: 15px; 
-            }
+            .profile-wrap { top: 16px; left: 16px; width: 56px; height: 56px; }
 
-            /* 3. Center the name and adjust size */
-            .unique-name {
-                font-size: 2.2rem; 
-                text-align: center;
-                line-height: 1.2;
-            }
+            .unique-name { letter-spacing: 1.5px; }
 
-            /* 4. Shrink the card padding so it fits narrow screens */
-            .main-content {
-                padding: 15px; 
-            }
+            .tagline { font-size: 0.92rem; margin-bottom: 18px; }
 
-            .card {
-                padding: 30px 20px; 
-            }
+            .bio { font-size: 1rem; margin-bottom: 22px; }
 
-            /* 5. Adjust text sizes for phone readability */
-            .bio, .about-text {
-                font-size: 1.05rem; 
-            }
-            
-            .about-title {
-                font-size: 1.6rem; 
-            }
-            
-            body.about-mode .about-title {
-                font-size: 1.8rem;
-            }
+            .about-title { margin-bottom: 18px; }
 
-            /* 6. Move the modal close button so it's easier to tap */
-            .close-btn {
-                top: 15px;
-                right: 25px;
-                font-size: 45px;
-            }
+            .interest-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+
+            .facts-row { flex-direction: column; align-items: stretch; }
+
+            #mute-btn { bottom: 18px; right: 18px; padding: 8px 14px; font-size: 0.8rem; }
+
+            .close-btn { top: 12px; right: 20px; font-size: 34px; }
         }
     </style>
 </head>
@@ -341,33 +457,79 @@
         <source src="vidssave.mp4" type="video/mp4">
     </video>
     <div class="fullscreen-overlay"></div>
-    <button id="mute-btn" onclick="toggleMute()">🔇 Sound Off</button>
+    <div class="cursor-glow"></div>
+    <button id="mute-btn" onclick="toggleMute()">🔇 Sound off</button>
 
-    <div class="content-wrapper">
-        <div class="banner">
-            <img src="./profile.jpeg" alt="My Profile Picture" class="profile-img" onclick="openModal()">
-            <h1 class="unique-name">Harsh Sharma</h1>
-        </div>
+    <div class="stage">
+        <div class="panel">
 
-        <div class="main-content">
-            <div class="card">
-                
-                <div id="home-section">
-                    <p class="bio" id="dynamic-bio">Loading bio...</p>
-                    <a href="#" class="button" onclick="showAbout(event)">About me</a>
+            <div id="home-section">
+                <div class="profile-wrap">
+                    <img src="./profile.jpeg" alt="My Profile Picture" class="profile-img" id="profile-img" onclick="openModal()">
                 </div>
-
-                <div id="about-section" style="display: none;">
-                    <h2 class="about-title">A Little More About Me</h2>
-                    <div class="about-text">
-                        <p><strong>Education:</strong> <span id="dynamic-edu">Loading education...</span></p>
-                        <p><strong>Interests:</strong> <span id="dynamic-interest">Loading interests...</span></p>
-                        <p><strong>My Goal:</strong> <span id="dynamic-goal">Loading goals...</span></p>
-                    </div>
-                    <a href="#" class="button" onclick="showHome(event)">Go Back</a>
-                </div>
-
+                <h1 class="unique-name">Harsh Sharma</h1>
+                <p class="tagline">Reader. Gamer. Language collector. Building weird things with AI.</p>
+                <p class="bio" id="dynamic-bio"></p>
+                <a href="#" class="button" onclick="showAbout(event)">See what I'm into →</a>
             </div>
+
+            <div id="about-section" style="display: none;">
+                <h2 class="about-title">What I'm into</h2>
+
+                <div class="facts-row">
+                    <div class="fact-pill"><span class="fact-label">Education</span><span id="dynamic-edu">Loading education...</span></div>
+                    <div class="fact-pill"><span class="fact-label">Interests</span><span id="dynamic-interest">Loading interests...</span></div>
+                    <div class="fact-pill"><span class="fact-label">Goal</span><span id="dynamic-goal">Loading goals...</span></div>
+                </div>
+
+                <div class="interest-grid">
+                    <div class="flip-card flip-card--books">
+                        <div class="flip-card-inner">
+                            <div class="flip-face flip-front"><span class="tile-label"><span class="icon">📚</span>Fiction</span></div>
+                            <div class="flip-face flip-back">Living in fantasy worlds one page at a time.</div>
+                        </div>
+                    </div>
+
+                    <div class="flip-card flip-card--lang">
+                        <div class="flip-card-inner">
+                            <div class="flip-face flip-front"><span class="tile-label"><span class="icon">🌐</span>Languages</span></div>
+                            <div class="flip-face flip-back">Collecting new words like side quests.</div>
+                        </div>
+                    </div>
+
+                    <div class="flip-card flip-card--ai">
+                        <div class="flip-card-inner">
+                            <div class="flip-face flip-front"><span class="tile-label"><span class="icon">🤖</span>AI Tools</span></div>
+                            <div class="flip-face flip-back">Tinkering with new tools to build weird, fun things.</div>
+                        </div>
+                    </div>
+
+                    <div class="flip-card flip-card--anime">
+                        <div class="flip-card-inner">
+                            <div class="flip-face flip-front"><span class="tile-label"><span class="icon">🎌</span>Anime</span></div>
+                            <div class="flip-face flip-back">Perpetually mid-series, always down for a new one.</div>
+                        </div>
+                    </div>
+
+                    <div class="flip-card flip-card--series">
+                        <div class="flip-card-inner">
+                            <div class="flip-face flip-front"><span class="tile-label"><span class="icon">📺</span>Web Series</span></div>
+                            <div class="flip-face flip-back">Binge-worthy stories over small talk, any day.</div>
+                        </div>
+                    </div>
+
+                    <div class="flip-card flip-card--gaming">
+                        <div class="flip-card-inner">
+                            <div class="flip-face flip-front"><span class="tile-label"><span class="icon">🎮</span>Gaming</span></div>
+                            <div class="flip-face flip-back">Exploring, grinding, occasionally rage-quitting.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <br>
+                <a href="#" class="button ghost" onclick="showHome(event)">← Back to home</a>
+            </div>
+
         </div>
     </div>
 
@@ -379,31 +541,73 @@
     <script>
         function openModal() { document.getElementById("imageModal").style.display = "flex"; }
         function closeModal() { document.getElementById("imageModal").style.display = "none"; }
-        
+
         function showAbout(event) {
             event.preventDefault();
             document.getElementById("home-section").style.display = "none";
             document.getElementById("about-section").style.display = "block";
-            document.body.classList.add("about-mode");
         }
-        
+
         function showHome(event) {
             event.preventDefault();
             document.getElementById("about-section").style.display = "none";
             document.getElementById("home-section").style.display = "block";
-            document.body.classList.remove("about-mode");
         }
+
         function toggleMute() {
             const video = document.querySelector('.fullscreen-bg-video');
             const btn = document.getElementById('mute-btn');
-            
             if (video.muted) {
-                video.muted = false; // Turns sound ON
-                btn.innerText = "🔊 Sound On"; // Changes button text
+                video.muted = false;
+                btn.innerText = "🔊 Sound on";
             } else {
-                video.muted = true; // Turns sound OFF
-                btn.innerText = "🔇 Sound Off";
+                video.muted = true;
+                btn.innerText = "🔇 Sound off";
             }
+        }
+
+        // Flip the interest tiles on click/tap
+        document.querySelectorAll('.flip-card').forEach(card => {
+            card.addEventListener('click', () => card.classList.toggle('flipped'));
+        });
+
+        // Cursor glow follows the pointer everywhere on the page
+        const glow = document.querySelector('.cursor-glow');
+        window.addEventListener('mousemove', (e) => {
+            glow.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%)`;
+        });
+
+        // Gentle holographic tilt on the profile picture — skipped if the
+        // visitor prefers reduced motion
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const profileImg = document.getElementById('profile-img');
+        const profileWrap = profileImg.closest('.profile-wrap');
+
+        if (!prefersReducedMotion) {
+            profileWrap.addEventListener('mousemove', (e) => {
+                const rect = profileWrap.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width - 0.5;
+                const y = (e.clientY - rect.top) / rect.height - 0.5;
+                profileImg.style.transform = `rotateY(${x * 22}deg) rotateX(${-y * 22}deg)`;
+            });
+            profileWrap.addEventListener('mouseleave', () => {
+                profileImg.style.transform = 'rotateY(0deg) rotateX(0deg)';
+            });
+        }
+
+        // Typewriter effect for the bio once it arrives from Firebase
+        function typeText(el, text, speed = 26) {
+            el.classList.add('typing');
+            el.innerText = '';
+            let i = 0;
+            const timer = setInterval(() => {
+                el.innerText += text.charAt(i);
+                i++;
+                if (i >= text.length) {
+                    clearInterval(timer);
+                    el.classList.remove('typing');
+                }
+            }, speed);
         }
     </script>
 
@@ -425,17 +629,22 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Fetch data from Firebase and update the page
         async function loadContent() {
             try {
                 const querySnapshot = await getDocs(collection(db, "portfolio_content"));
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
-                    // Maps database fields to HTML IDs
-                    if(data.bio_text) document.getElementById("dynamic-bio").innerText = data.bio_text;
-                    if(data.education_text) document.getElementById("dynamic-edu").innerText = data.education_text;
-                    if(data.interest_text) document.getElementById("dynamic-interest").innerText = data.interest_text;
-                    if(data.goal_text) document.getElementById("dynamic-goal").innerText = data.goal_text;
+                    if (data.bio_text) {
+                        const bioEl = document.getElementById("dynamic-bio");
+                        if (typeof window.typeText === "function") {
+                            window.typeText(bioEl, data.bio_text);
+                        } else {
+                            bioEl.innerText = data.bio_text;
+                        }
+                    }
+                    if (data.education_text) document.getElementById("dynamic-edu").innerText = data.education_text;
+                    if (data.interest_text) document.getElementById("dynamic-interest").innerText = data.interest_text;
+                    if (data.goal_text) document.getElementById("dynamic-goal").innerText = data.goal_text;
                 });
             } catch (error) {
                 console.error("Error fetching Firebase data:", error);
@@ -443,7 +652,6 @@
             }
         }
 
-        // Run the fetch function instantly when the page loads
         loadContent();
     </script>
 </body>
